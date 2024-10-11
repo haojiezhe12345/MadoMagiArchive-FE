@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
-import { FilesUpdateDTO, uploadFiles } from '@/requests'
 
 
 export interface uploadTask {
     files: TaskFile[]
-    props?: FilesUpdateDTO
+    props?: models.FilesUpdateDTO
 }
 
 export interface TaskFile {
@@ -27,7 +26,7 @@ export const useUploadStore = defineStore('upload', () => {
     const tasks = ref<uploadTask[]>([])
     const uploadShowing = ref(false)
 
-    async function createUploadTask(files: File[], props?: FilesUpdateDTO) {
+    async function createUploadTask(files: File[], props?: models.FilesUpdateDTO) {
         const task: uploadTask = { files: [], props }
         files.forEach(file => {
             task.files.push({ file, status: TaskFileStatus.Pending })
@@ -45,7 +44,7 @@ export const useUploadStore = defineStore('upload', () => {
                 reader.onload = () => typeof reader.result == 'string' && (file.fileDataURL = reader.result)
             }
 
-            await uploadFiles([file.file], e => {
+            await requests.uploadFiles([file.file], e => {
                 if (e.total) file.progress = Math.round(e.loaded / e.total * 100)
             })
                 .then(r => {

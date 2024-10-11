@@ -47,10 +47,41 @@
             </v-card>
         </v-menu>
 
-        <v-menu activator="#user-btn">
-            <v-list bg-color="background" max-height="60vh">
-                <v-list-item append-icon="mdi-open-in-new" @click="gotoUser">User profile</v-list-item>
-            </v-list>
+        <v-menu activator="#user-btn" :close-on-content-click="false">
+            <v-card class="user-card" color="background">
+                <v-card-item>
+                    <div class="user-detail">
+                        <v-avatar :image="'https://haojiezhe12345.top:82/madohomu/api/data/images/avatars/' + user.avatar" size="64" />
+
+                        <div v-if="userLoggedIn">{{ user.name }}<span style="color: #666"> (UID: {{ user.id }})</span></div>
+                        <div v-else>Not logged in</div>
+
+                        <v-row>
+                            <v-col>
+                                <div>Read</div>
+                                <div>Lv.{{ user.accessLevel != null ? user.accessLevel & 0x00ff0000 / 0x10000 : '' }}</div>
+                            </v-col>
+                            <v-col>
+                                <div>Write</div>
+                                <div>Lv.{{ user.accessLevel != null ? user.accessLevel & 0x0000ff00 / 0x100 : '' }}</div>
+                            </v-col>
+                            <v-col>
+                                <div>Delete</div>
+                                <div>Lv.{{ user.accessLevel != null ? user.accessLevel & 0x000000ff : '' }}</div>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </v-card-item>
+
+                <template v-slot:actions>
+                    <v-spacer />
+                    <v-btn prepend-icon="mdi-account" append-icon="mdi-open-in-new" rounded @click="gotoUser">
+                        <template v-if="userLoggedIn">MadoHomu.love Account</template>
+                        <template v-else>Log in through MadoHomu.love</template>
+                    </v-btn>
+                    <v-spacer />
+                </template>
+            </v-card>
         </v-menu>
     </v-app-bar>
 </template>
@@ -58,17 +89,18 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
 import { useUploadStore, TaskFileStatus } from '@/stores/upload'
-import router from '@/router';
 
 const user = useUserStore().user
-const uploadStore = useUploadStore()
+const userLoggedIn = useUserStore().userLoggedIn
 
+const uploadStore = useUploadStore()
 const uploadQueue = computed(() => uploadStore.tasks.flatMap(x => x.files).reverse())
 
 const search = ref('')
 
 function gotoUser() {
-    if (location.pathname != '/') window.open(user.id ? '/#popup-userHome' : '/#popup-loginPopup')
+    let base = location.hostname.includes('haojiezhe12345.top') ? '/madohomu/' : '/'
+    if (location.pathname != '/') window.open(base + (userLoggedIn ? '#popup-userHome' : '#popup-loginPopup'))
 }
 </script>
 
@@ -94,6 +126,26 @@ function gotoUser() {
 .v-menu {
     h4 {
         padding: 14px 16px 4px;
+    }
+}
+
+.user-card {
+    .user-detail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .v-avatar {
+            margin: 8px 0;
+        }
+
+        .v-row {
+            margin-top: 0;
+        }
+
+        .v-col {
+            text-align: center;
+        }
     }
 }
 </style>

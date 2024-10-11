@@ -23,12 +23,10 @@ export default defineConfig({
         'vue',
         {
           'vue-router/auto': ['useRoute', 'useRouter'],
-        },
-        {
+          'vue-router': ['onBeforeRouteLeave', 'onBeforeRouteUpdate'],
           axios: [['default', 'axios']],
-        },
-        {
-          '@/requests': [['*', 'requests']]
+          '@/router': [['default', 'router']],
+          '@/requests': [['*', 'requests']],
         },
       ],
       dts: 'src/auto-imports.d.ts',

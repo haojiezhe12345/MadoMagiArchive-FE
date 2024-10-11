@@ -72,6 +72,9 @@
     "axios": true,
     "default": true,
     "@/requests": true,
-    "requests": true
+    "requests": true,
+    "onBeforeRouteLeave": true,
+    "onBeforeRouteUpdate": true,
+    "router": true
   }
 }

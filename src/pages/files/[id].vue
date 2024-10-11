@@ -1,10 +1,10 @@
 <template>
-    <div class="file-view">
-        <div ref="fileContentDiv" class="file-content">
+    <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !previewImg?.src }">
+        <div ref="fileContent" class="file-content">
             <v-progress-linear v-if="loading" indeterminate color="secondary"></v-progress-linear>
             <v-btn class="back-btn" variant="text" icon="mdi-arrow-left" @click="router.back()"></v-btn>
 
-            <div class="img-container">
+            <div ref="imgContainer" class="img-container">
                 <img ref="imgElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false"></img>
                 <img ref="previewImg" draggable="false">
             </div>
@@ -17,43 +17,45 @@
 </template>
 
 <script setup lang="ts">
-import * as requests from '@/requests'
-import router from '@/router'
-
 const route = useRoute()
 // @ts-ignore
 const fileId = route.params.id
 
-const fileContentDiv = ref<HTMLDivElement>()
+const fileView = ref<HTMLDivElement>()
+const fileContent = ref<HTMLDivElement>()
+const imgContainer = ref<HTMLDivElement>()
 const imgElement = ref<HTMLImageElement>()
 const previewImg = ref<HTMLImageElement>()
 
 const loading = ref(false)
 
-const fileDetail = ref<requests.FileItem>()
+const fileDetail = ref<models.File>()
 
 onMounted(async () => {
     fileDetail.value = await requests.getFileDeatil(fileId)
 })
 
+onBeforeRouteLeave(async () => await fadeOutView(200))
+onBeforeRouteUpdate(async () => await fadeOutView(100))
+
 nextTick(() => {
-    if (fileContentDiv.value && imgElement.value && previewImg.value && window.lastClickedElement && 'src' in window.lastClickedElement) {
+    if (fileContent.value && imgElement.value && previewImg.value && window.lastClickedElement && 'src' in window.lastClickedElement) {
         imgElement.value.style.display = 'none'
         previewImg.value.style.display = 'block'
         previewImg.value.src = window.lastClickedElement.src
         loading.value = true
 
         const rect0 = window.lastClickedElement.getBoundingClientRect()
-        fileContentDiv.value.style.setProperty('--from-top', `${rect0.top}px`)
-        fileContentDiv.value.style.setProperty('--from-left', `${rect0.left}px`)
-        fileContentDiv.value.style.setProperty('--from-right', `${window.innerWidth - rect0.right}px`)
-        fileContentDiv.value.style.setProperty('--from-bottom', `${window.innerHeight - rect0.bottom}px`)
+        fileContent.value.style.setProperty('--from-top', `${rect0.top}px`)
+        fileContent.value.style.setProperty('--from-left', `${rect0.left}px`)
+        fileContent.value.style.setProperty('--from-right', `${window.innerWidth - rect0.right}px`)
+        fileContent.value.style.setProperty('--from-bottom', `${window.innerHeight - rect0.bottom}px`)
 
-        const rect1 = fileContentDiv.value.getBoundingClientRect()
-        fileContentDiv.value.style.setProperty('--to-top', `${rect1.top}px`)
-        fileContentDiv.value.style.setProperty('--to-left', `${rect1.left}px`)
-        fileContentDiv.value.style.setProperty('--to-right', `${window.innerWidth - rect1.right}px`)
-        fileContentDiv.value.style.setProperty('--to-bottom', `${window.innerHeight - rect1.bottom}px`)
+        const rect1 = fileContent.value.getBoundingClientRect()
+        fileContent.value.style.setProperty('--to-top', `${rect1.top}px`)
+        fileContent.value.style.setProperty('--to-left', `${rect1.left}px`)
+        fileContent.value.style.setProperty('--to-right', `${window.innerWidth - rect1.right}px`)
+        fileContent.value.style.setProperty('--to-bottom', `${window.innerHeight - rect1.bottom}px`)
 
         imgElement.value.addEventListener('load', () => loading.value = false)
         setTimeout(() => {
@@ -72,6 +74,16 @@ nextTick(() => {
 function showFullImage() {
     imgElement.value!.style.display = 'block'
     previewImg.value!.style.display = 'none'
+}
+
+function fadeOutView(duration: number) {
+    return new Promise<void>(resolve => {
+        fileView.value?.animate(
+            [{ opacity: 1 }, { opacity: 0 }],
+            { duration, fill: 'forwards' },
+        )
+        setTimeout(resolve, duration);
+    })
 }
 
 </script>
@@ -178,6 +190,14 @@ function showFullImage() {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+.no-zoom-animation {
+
+    .img-container,
+    .file-detail {
+        animation: fadein 0.2s;
     }
 }
 

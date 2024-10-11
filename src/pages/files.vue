@@ -27,8 +27,11 @@
             <v-item-group v-model="selectedFiles" :multiple="multiSelect">
                 <v-item v-for="(file, index) in files" :key="file.id" v-slot="{ isSelected, toggle }">
                     <v-card :class="{ selected: isSelected }" flat @click="handleItemClick($event, index, toggle)">
-                        <img :src="axios.defaults.baseURL + `/files/${file.id}/thumb`" draggable="false"></img>
-                        <v-icon v-if="isSelected" color="secondary">mdi-check-circle</v-icon>
+                        <div class="file-preview">
+                            <img v-if="file.type == null || file.type.startsWith('image')" :src="axios.defaults.baseURL + `/files/${file.id}/thumb`" draggable="false"></img>
+                            <v-icon v-else size="36">mdi-file-question</v-icon>
+                        </div>
+                        <v-icon v-if="isSelected" class="selectedIcon" color="secondary">mdi-check-circle</v-icon>
                     </v-card>
                 </v-item>
             </v-item-group>
@@ -48,7 +51,7 @@
             <v-btn key="4" prepend-icon="mdi-file" size="large" rounded @click="if (uploadInput) { uploadInput.accept = '*'; uploadInput.click() }">Any files</v-btn>
         </v-speed-dial>
 
-        <router-view />
+        <router-view :key="Date.now()" />
     </div>
 
 
@@ -64,8 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import * as requests from '@/requests'
-import router from '@/router';
 import { useUploadStore } from '@/stores/upload'
 import { VBtn } from 'vuetify/components';
 
@@ -74,8 +75,8 @@ const selectedFiles = ref<number[] | number | undefined>()
 const selectedFilesCount = computed(() => typeof selectedFiles.value == 'object' ? selectedFiles.value.length : selectedFiles.value != null ? 1 : 0)
 const selectedTags = ref<number[]>()
 
-const files = ref<requests.FileItem[]>([])
-const tags = ref<requests.Tag[]>([])
+const files = ref<models.File[]>([])
+const tags = ref<models.Tag[]>([])
 
 const uploadStore = useUploadStore()
 
@@ -98,6 +99,13 @@ watch(selectedFiles, () => {
 
 watch(confirmDeleteShowing, () => {
     confirmDeleteShowing.value ? nextTick(() => confirmDeleteBtn.value?.$el.focus()) : scrollContainer.value?.focus()
+})
+
+onBeforeRouteLeave(() => {
+    if (multiSelect.value) {
+        deselectFiles()
+        return false
+    }
 })
 
 async function loadFiles(fromId?: number) {
@@ -239,24 +247,33 @@ async function deleteFiles() {
 
     .v-card {
         display: inline-block;
-        min-width: 100px;
+        min-width: 150px;
         height: 200px;
+
+        .file-preview {
+            width: 100%;
+            height: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.1s, border-radius 0.1s;
+        }
 
         img {
             min-width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.1s, border-radius 0.1s;
         }
     }
 
     .v-card.selected {
-        img {
+        .file-preview {
             transform: scale(0.9);
             border-radius: 8px;
         }
 
-        .v-icon {
+        .selectedIcon {
             position: absolute;
             top: 4px;
             left: 4px;

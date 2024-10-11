@@ -45,6 +45,7 @@ declare global {
   const ref: typeof import('vue')['ref']
   const requests: typeof import('@/requests')
   const resolveComponent: typeof import('vue')['resolveComponent']
+  const router: typeof import('@/router')['default']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
@@ -100,6 +101,8 @@ declare module 'vue' {
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
+    readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>
+    readonly onBeforeRouteUpdate: UnwrapRef<typeof import('vue-router')['onBeforeRouteUpdate']>
     readonly onBeforeUnmount: UnwrapRef<typeof import('vue')['onBeforeUnmount']>
     readonly onBeforeUpdate: UnwrapRef<typeof import('vue')['onBeforeUpdate']>
     readonly onDeactivated: UnwrapRef<typeof import('vue')['onDeactivated']>
@@ -118,6 +121,7 @@ declare module 'vue' {
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly requests: UnwrapRef<typeof import('@/requests')>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly router: UnwrapRef<typeof import('@/router')['default']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>

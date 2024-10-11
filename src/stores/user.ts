@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
-import { UserMe, getMe } from '@/requests'
 
-const anonymousUser: UserMe = {
+const anonymousUser: models.User = {
     name: 'Anonymous',
     avatar: 'default.png'
 }
@@ -9,13 +8,17 @@ const anonymousUser: UserMe = {
 export const useUserStore = defineStore('user', () => {
     const user = ref(anonymousUser)
 
+    const userLoggedIn = computed(() => user.value.id != null && user.value.id != -1)
+
     async function loadUser() {
+        user.value = anonymousUser
         if (localStorage.getItem('token')) {
-            Object.assign(user.value, await getMe())
-        } else {
-            Object.assign(user.value, anonymousUser)
+            try {
+                user.value = await requests.getMe()
+            } catch (error) { }
         }
+        Object.assign(user.value, await requests.getSelf())
     }
 
-    return { user, loadUser }
+    return { user, userLoggedIn, loadUser }
 })
