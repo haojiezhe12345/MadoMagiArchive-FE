@@ -1,6 +1,27 @@
 import { AxiosProgressEvent } from "axios"
 
 
+export function setupRequests() {
+    axios.defaults.baseURL =
+        location.hostname.includes('localhost') || location.hostname.includes('haojiezhe12345.top')
+            ? 'api'
+            : 'https://haojiezhe12345.top:82/madohomu/archive/api'
+
+    axios.defaults.headers.token = localStorage.getItem('token')
+    document.cookie = `token=${localStorage.getItem('token')}`
+
+    axios.interceptors.response.use(function (response) {
+        // Any status code that lie within the range of 2xx cause this function to trigger
+        // Do something with response data
+        return response;
+    }, function (error) {
+        utils.showSnackbar(error)
+        return Promise.reject(error);
+    });
+}
+
+
+
 export async function getMe() {
     return (await axios.get<models.User>('https://haojiezhe12345.top:82/madohomu/api/user/me')).data
 }
@@ -8,6 +29,7 @@ export async function getMe() {
 export async function getSelf() {
     return (await axios.get<models.User>('users/self')).data
 }
+
 
 
 export async function getFiles(params?: {
@@ -22,6 +44,7 @@ export async function getFiles(params?: {
 export async function getFileDeatil(id: number) {
     return (await axios.get<models.File>(`files/${id}/detail`)).data
 }
+
 
 
 export async function getTags(params?: {

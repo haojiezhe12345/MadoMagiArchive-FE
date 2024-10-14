@@ -75,6 +75,7 @@
     "requests": true,
     "onBeforeRouteLeave": true,
     "onBeforeRouteUpdate": true,
-    "router": true
+    "router": true,
+    "utils": true
   }
 }

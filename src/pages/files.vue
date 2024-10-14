@@ -44,11 +44,11 @@
                 <v-btn class="upload-btn" prepend-icon="mdi-upload" size="large" color="secondary" rounded v-bind="activatorProps">Upload</v-btn>
             </template>
 
-            <v-btn key="1" prepend-icon="mdi-image" size="large" rounded @click="if (uploadInput) { uploadInput.accept = 'image/*'; uploadInput.click() }">Image</v-btn>
-            <v-btn key="2" prepend-icon="mdi-format-size" size="large" rounded @click="if (uploadInput) { uploadInput.accept = 'text/*'; uploadInput.click() }">Text</v-btn>
-            <v-btn key="3" prepend-icon="mdi-music" size="large" rounded @click="if (uploadInput) { uploadInput.accept = 'audio/*'; uploadInput.click() }">Music</v-btn>
-            <v-btn key="3" prepend-icon="mdi-video" size="large" rounded @click="if (uploadInput) { uploadInput.accept = 'video/*'; uploadInput.click() }">Video</v-btn>
-            <v-btn key="4" prepend-icon="mdi-file" size="large" rounded @click="if (uploadInput) { uploadInput.accept = '*'; uploadInput.click() }">Any files</v-btn>
+            <v-btn key="1" prepend-icon="mdi-image" size="large" rounded @click="uploadInput!.accept = 'image/*'; uploadInput!.click()">Image</v-btn>
+            <v-btn key="2" prepend-icon="mdi-format-size" size="large" rounded @click="uploadInput!.accept = 'text/*'; uploadInput!.click()">Text</v-btn>
+            <v-btn key="3" prepend-icon="mdi-music" size="large" rounded @click="uploadInput!.accept = 'audio/*'; uploadInput!.click()">Music</v-btn>
+            <v-btn key="3" prepend-icon="mdi-video" size="large" rounded @click="uploadInput!.accept = 'video/*'; uploadInput!.click()">Video</v-btn>
+            <v-btn key="4" prepend-icon="mdi-file" size="large" rounded @click="uploadInput!.accept = '*'; uploadInput!.click()">Any files</v-btn>
         </v-speed-dial>
 
         <router-view :key="Date.now()" />
@@ -230,7 +230,7 @@ async function deleteFiles() {
 
 .v-toolbar {
     z-index: 999;
-    transition: background-color 0.15s, box-shadow 0.15s;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .scroll {
