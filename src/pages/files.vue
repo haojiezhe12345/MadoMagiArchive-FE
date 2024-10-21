@@ -1,5 +1,5 @@
 <template>
-    <div class="root" @keydown="handleKeydown" @dragover="handleDragover" @drop="handleDrop">
+    <div class="root" @keydown="handleKeydown" @dragover.prevent="handleDragover" @drop.prevent="handleDrop">
         <v-toolbar :color="multiSelect ? 'surface' : 'background'" :elevation="multiSelect ? 4 : 0">
             <template v-if="multiSelect">
                 <v-btn icon="mdi-arrow-left" @click="deselectFiles"></v-btn>
@@ -189,13 +189,11 @@ function handleKeydown(e: KeyboardEvent) {
     if (e.key == 'Delete') confirmDeleteShowing.value = true
 }
 
-function handleDragover(e: any) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+function handleDragover(e: DragEvent) {
+    e.dataTransfer && (e.dataTransfer.dropEffect = "move")
 }
 
 function handleDrop(e: DragEvent) {
-    e.preventDefault();
     confirmUpload(e.dataTransfer?.files)
 }
 

@@ -36,3 +36,21 @@ export function parseHexPermission(permission?: number) {
         delete: permission != null ? (permission & 0x000000ff) : NaN,
     }
 }
+
+export function getFileSize(size: number) {
+    let KB = size / 1024
+    if (KB < 10) return KB.toFixed(1) + ' KB'
+    else if (KB < 1000) return KB.toFixed() + ' KB'
+    else {
+        let MB = KB / 1024
+        if (MB < 10) return MB.toFixed(2) + ' MB'
+        if (MB < 100) return MB.toFixed(1) + ' MB'
+        else if (MB < 1000) return MB.toFixed() + ' MB'
+        else {
+            let GB = MB / 1024
+            if (GB < 10) return GB.toFixed(2) + ' GB'
+            if (GB < 100) return GB.toFixed(1) + ' GB'
+            else return GB.toFixed() + ' GB'
+        }
+    }
+}

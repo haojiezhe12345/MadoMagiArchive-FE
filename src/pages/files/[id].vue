@@ -1,5 +1,5 @@
 <template>
-    <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !previewImg?.src }">
+    <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !previewImg?.src }" tabindex="0" @keydown.stop="handleKeydown">
         <div ref="fileContent" class="file-content">
             <v-progress-linear v-if="loading" indeterminate color="secondary"></v-progress-linear>
             <v-btn class="back-btn" variant="text" icon="mdi-arrow-left" @click="router.back()"></v-btn>
@@ -11,12 +11,14 @@
         </div>
 
         <div class="file-detail">
-            {{ fileDetail }}
+            <FileDetail :file-ids="[fileId]" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import FileDetail from "@/components/FileDetail.vue";
+
 const route = useRoute()
 // @ts-ignore
 const fileId = route.params.id
@@ -29,17 +31,13 @@ const previewImg = ref<HTMLImageElement>()
 
 const loading = ref(false)
 
-const fileDetail = ref<models.File>()
-
-onMounted(async () => {
-    fileDetail.value = await requests.getFileDeatil(fileId)
-})
-
 onBeforeRouteLeave(async () => await fadeOutView(200))
-onBeforeRouteUpdate(async () => await fadeOutView(100))
+onBeforeRouteUpdate(async () => await fadeOutView(65))
 
 nextTick(() => {
-    if (fileContent.value && imgElement.value && previewImg.value && window.lastClickedElement && 'src' in window.lastClickedElement) {
+    fileView.value?.focus()
+
+    if (fileContent.value && imgElement.value && previewImg.value && window.lastClickedElement instanceof HTMLImageElement) {
         imgElement.value.style.display = 'none'
         previewImg.value.style.display = 'block'
         previewImg.value.src = window.lastClickedElement.src
@@ -86,6 +84,10 @@ function fadeOutView(duration: number) {
     })
 }
 
+function handleKeydown(e: KeyboardEvent) {
+    if (e.key == 'Escape') router.back()
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -99,7 +101,7 @@ function fadeOutView(duration: number) {
     display: flex;
     background-color: white;
     overflow: hidden;
-    animation: bg-show 0.2s;
+    animation: bg-show 0.25s;
 }
 
 @keyframes bg-show {
@@ -129,7 +131,7 @@ function fadeOutView(duration: number) {
         top: 8px;
         left: 4px;
         z-index: 1000;
-        animation: fadein 0.2s;
+        animation: fadein 0.25s;
     }
 }
 
@@ -146,7 +148,7 @@ function fadeOutView(duration: number) {
 .img-container {
     box-sizing: border-box;
     padding: 24px;
-    animation: img-zoom 0.2s;
+    animation: img-zoom 0.25s;
 
     img {
         width: 100%;
@@ -178,12 +180,13 @@ function fadeOutView(duration: number) {
 .file-detail {
     width: 400px;
     max-width: 37.5%;
+    overflow: auto;
     animation: file-detail-show 0.25s;
 }
 
 @keyframes file-detail-show {
     from {
-        transform: translateX(100%);
+        transform: translateX(50%);
         opacity: 0;
     }
 
@@ -197,13 +200,14 @@ function fadeOutView(duration: number) {
 
     .img-container,
     .file-detail {
-        animation: fadein 0.2s;
+        animation: fadein 0.25s;
     }
 }
 
 @media (max-width: 750px) {
     .file-view {
         display: block;
+        overflow-y: auto;
     }
 
     .file-content {
@@ -218,7 +222,7 @@ function fadeOutView(duration: number) {
     .file-detail {
         width: initial;
         max-width: initial;
-        animation-duration: 0.2s;
+        animation-duration: 0.25s;
     }
 }
 </style>

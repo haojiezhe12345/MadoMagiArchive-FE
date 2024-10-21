@@ -63,7 +63,7 @@
                                 </v-expansion-panel-title>
 
                                 <v-expansion-panel-text>
-                                    <div style="display: flex;flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
                                         <v-row no-gutters>Read<v-spacer />Lv. {{ userStore.accessLevel.read }}</v-row>
                                         <v-row no-gutters>Write<v-spacer />Lv. {{ userStore.accessLevel.write }}</v-row>
                                         <v-row no-gutters>Delete<v-spacer />Lv. {{ userStore.accessLevel.delete }}</v-row>
