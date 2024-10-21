@@ -1,17 +1,21 @@
 <template>
-    <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !previewImg?.src }" tabindex="0" @keydown.stop="handleKeydown">
+    <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !mediaPreviewImg?.src }" tabindex="0" @keydown.stop="handleKeydown">
         <div ref="fileContent" class="file-content">
             <v-progress-linear v-if="loading" indeterminate color="secondary" height="5"></v-progress-linear>
             <v-btn class="back-btn" variant="text" icon="mdi-arrow-left" @click="router.back()"></v-btn>
 
-            <div ref="imgContainer" class="img-container">
-                <img ref="imgElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false"></img>
-                <img ref="previewImg" draggable="false">
+            <div ref="mediaContainer" class="media-container">
+                <img v-show="showPreview" ref="mediaPreviewImg" draggable="false">
+
+                <template v-if="fileType">
+                    <video v-show="!showPreview" v-if="fileType.startsWith('video/')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" autoplay controls loop @loadeddata="loading = false"></video>
+                    <img v-show="!showPreview" v-else="fileType.startsWith('image/')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false" @load="loading = false"></img>
+                </template>
             </div>
         </div>
 
         <div class="file-detail">
-            <FileDetail :file-ids="[fileId]" />
+            <FileDetail ref="fileDetail" :file-ids="[fileId]" />
         </div>
     </div>
 </template>
@@ -25,11 +29,17 @@ const fileId = route.params.id
 
 const fileView = ref<HTMLDivElement>()
 const fileContent = ref<HTMLDivElement>()
-const imgContainer = ref<HTMLDivElement>()
-const imgElement = ref<HTMLImageElement>()
-const previewImg = ref<HTMLImageElement>()
 
-const loading = ref(false)
+const mediaContainer = ref<HTMLDivElement>()
+const mediaPreviewImg = ref<HTMLImageElement>()
+const mediaElement = ref<HTMLImageElement | HTMLVideoElement>()
+
+const fileDetail = ref<typeof FileDetail>()
+const fileType = computed<string | undefined>(() => fileDetail.value?.fileDetail?.type)
+
+const loading = ref(true)
+const forceShowPreview = ref(false)
+const showPreview = computed(() => (forceShowPreview.value || loading.value) && mediaPreviewImg.value?.src)
 
 onBeforeRouteLeave(async () => await fadeOutView(200))
 onBeforeRouteUpdate(async () => await fadeOutView(65))
@@ -37,42 +47,27 @@ onBeforeRouteUpdate(async () => await fadeOutView(65))
 nextTick(() => {
     fileView.value?.focus()
 
-    if (fileContent.value && imgElement.value && previewImg.value && window.lastClickedElement instanceof HTMLImageElement) {
-        imgElement.value.style.display = 'none'
-        previewImg.value.style.display = 'block'
-        previewImg.value.src = window.lastClickedElement.src
-        loading.value = true
+    if (window.lastClickedElement instanceof HTMLImageElement) {
+        mediaPreviewImg.value!.src = window.lastClickedElement.src
+        forceShowPreview.value = true
 
         const rect0 = window.lastClickedElement.getBoundingClientRect()
-        fileContent.value.style.setProperty('--from-top', `${rect0.top}px`)
-        fileContent.value.style.setProperty('--from-left', `${rect0.left}px`)
-        fileContent.value.style.setProperty('--from-right', `${window.innerWidth - rect0.right}px`)
-        fileContent.value.style.setProperty('--from-bottom', `${window.innerHeight - rect0.bottom}px`)
+        fileContent.value!.style.setProperty('--from-top', `${rect0.top}px`)
+        fileContent.value!.style.setProperty('--from-left', `${rect0.left}px`)
+        fileContent.value!.style.setProperty('--from-right', `${window.innerWidth - rect0.right}px`)
+        fileContent.value!.style.setProperty('--from-bottom', `${window.innerHeight - rect0.bottom}px`)
 
-        const rect1 = fileContent.value.getBoundingClientRect()
-        fileContent.value.style.setProperty('--to-top', `${rect1.top}px`)
-        fileContent.value.style.setProperty('--to-left', `${rect1.left}px`)
-        fileContent.value.style.setProperty('--to-right', `${window.innerWidth - rect1.right}px`)
-        fileContent.value.style.setProperty('--to-bottom', `${window.innerHeight - rect1.bottom}px`)
+        const rect1 = fileContent.value!.getBoundingClientRect()
+        fileContent.value!.style.setProperty('--to-top', `${rect1.top}px`)
+        fileContent.value!.style.setProperty('--to-left', `${rect1.left}px`)
+        fileContent.value!.style.setProperty('--to-right', `${window.innerWidth - rect1.right}px`)
+        fileContent.value!.style.setProperty('--to-bottom', `${window.innerHeight - rect1.bottom}px`)
 
-        imgElement.value.addEventListener('load', () => loading.value = false)
-        setTimeout(() => {
-            loading.value
-                ? imgElement.value!.addEventListener('load', showFullImage)
-                : showFullImage()
-        }, 200);
+        setTimeout(() => forceShowPreview.value = false, 250);
 
         window.lastClickedElement = null
     }
-    else {
-        showFullImage()
-    }
 })
-
-function showFullImage() {
-    imgElement.value!.style.display = 'block'
-    previewImg.value!.style.display = 'none'
-}
 
 function fadeOutView(duration: number) {
     return new Promise<void>(resolve => {
@@ -145,12 +140,13 @@ function handleKeydown(e: KeyboardEvent) {
     }
 }
 
-.img-container {
+.media-container {
     box-sizing: border-box;
     padding: 24px;
     animation: img-zoom 0.25s;
 
-    img {
+    img,
+    video {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -198,7 +194,7 @@ function handleKeydown(e: KeyboardEvent) {
 
 .no-zoom-animation {
 
-    .img-container,
+    .media-container,
     .file-detail {
         animation: fadein 0.25s;
     }
@@ -214,7 +210,7 @@ function handleKeydown(e: KeyboardEvent) {
         max-height: 70%;
     }
 
-    .img-container {
+    .media-container {
         width: 100%;
         animation-name: file-detail-show;
     }

@@ -53,6 +53,7 @@ const cancelEditBtn = ref<VBtn>()
 const enterEditBtn = ref<VBtn>()
 
 const fileDetail = ref<models.File>()
+defineExpose({ fileDetail })
 
 const editMode = ref(Boolean(props.edit))
 
