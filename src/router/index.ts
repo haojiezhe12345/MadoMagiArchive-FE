@@ -40,7 +40,7 @@ router.isReady().then(() => {
 
     router.beforeEach(() => {
         if (lastPosition != null && document.activeElement instanceof HTMLElement) positionFocusedElements[lastPosition] = document.activeElement
-        console.log(positionFocusedElements)
+        // console.log(positionFocusedElements)
     })
 
     router.afterEach(() => {
@@ -50,8 +50,8 @@ router.isReady().then(() => {
             ? currentPosition < lastPosition
             : false
 
-        console.log(history.state)
-        console.log(isBackwards)
+        // console.log(history.state)
+        // console.log(isBackwards)
 
         if (isBackwards && currentPosition != null) {
             positionFocusedElements[currentPosition].focus()

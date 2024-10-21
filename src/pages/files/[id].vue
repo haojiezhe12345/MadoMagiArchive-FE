@@ -1,7 +1,7 @@
 <template>
     <div ref="fileView" class="file-view" :class="{ 'no-zoom-animation': !previewImg?.src }" tabindex="0" @keydown.stop="handleKeydown">
         <div ref="fileContent" class="file-content">
-            <v-progress-linear v-if="loading" indeterminate color="secondary"></v-progress-linear>
+            <v-progress-linear v-if="loading" indeterminate color="secondary" height="5"></v-progress-linear>
             <v-btn class="back-btn" variant="text" icon="mdi-arrow-left" @click="router.back()"></v-btn>
 
             <div ref="imgContainer" class="img-container">
