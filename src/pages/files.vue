@@ -28,7 +28,7 @@
                 <v-item v-for="(file, index) in files" :key="file.id" v-slot="{ isSelected, toggle }">
                     <v-card :class="{ selected: isSelected }" flat @click="handleItemClick($event, index, toggle)">
                         <div class="file-preview">
-                            <img v-if="file.type == null || file.type.startsWith('image')" :src="axios.defaults.baseURL + `/files/${file.id}/thumb`" draggable="false"></img>
+                            <img v-if="file.type == null || file.type.startsWith('image') || file.type.startsWith('video')" :src="axios.defaults.baseURL + `/files/${file.id}/thumb`" draggable="false"></img>
                             <v-icon v-else size="36">mdi-file-question</v-icon>
                         </div>
                         <v-icon v-if="isSelected" class="selectedIcon" color="secondary">mdi-check-circle</v-icon>

@@ -7,9 +7,9 @@
             <div ref="mediaContainer" class="media-container">
                 <img v-show="showPreview" ref="mediaPreviewImg" draggable="false">
 
-                <template v-if="fileType">
-                    <video v-show="!showPreview" v-if="fileType.startsWith('video/')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" autoplay controls loop @loadeddata="loading = false"></video>
-                    <img v-show="!showPreview" v-else="fileType.startsWith('image/')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false" @load="loading = false"></img>
+                <template v-if="fileType !== undefined">
+                    <video v-show="!showPreview" v-if="fileType?.startsWith('video')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" autoplay controls loop @loadeddata="loading = false"></video>
+                    <img v-show="!showPreview" v-else ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false" @load="loading = false"></img>
                 </template>
             </div>
         </div>
@@ -35,7 +35,7 @@ const mediaPreviewImg = ref<HTMLImageElement>()
 const mediaElement = ref<HTMLImageElement | HTMLVideoElement>()
 
 const fileDetail = ref<typeof FileDetail>()
-const fileType = computed<string | undefined>(() => fileDetail.value?.fileDetail?.type)
+const fileType = computed<string | null | undefined>(() => fileDetail.value?.fileDetail?.type)
 
 const loading = ref(true)
 const forceShowPreview = ref(false)

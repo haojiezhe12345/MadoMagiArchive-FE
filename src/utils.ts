@@ -37,7 +37,8 @@ export function parseHexPermission(permission?: number) {
     }
 }
 
-export function getFileSize(size: number) {
+export function getFileSize(size?: number) {
+    if (size == null) return 'Unknown'
     let KB = size / 1024
     if (KB < 10) return KB.toFixed(1) + ' KB'
     else if (KB < 1000) return KB.toFixed() + ' KB'

@@ -24,43 +24,31 @@ declare global {
             }]
         }
 
-        export interface File {
-            permission: number
-            owner: number
+        export interface File {            permission?: number
+            owner?: number
             id: number
-            type: string
-            r18: boolean
-            title: string
-            description: string
-            source: string
-            width: number
-            height: number
+            type?: string
+            r18?: boolean
+            title?: string
+            description?: string
+            source?: string
+            width?: number
+            height?: number
 
-            file: string
-            size: number
-            dateCreated: string
-            dateModified: string
-            tags: [{
-                permission: number
-                owner: number
-                id: number
-                type: string
-                imageFile: number
-                description: string
-                names: [{
-                    name: string
-                    lang: string
-                }]
-            }]
+            file?: string
+            size?: number
+            dateCreated?: string
+            dateModified?: string
+            tags: Tag[]
         }
 
         export interface Tag {
-            permission: number
-            owner: number
+            permission?: number
+            owner?: number
             id: number
-            type: string
-            imageFile: number
-            description: string
+            type?: string
+            imageFile?: number
+            description?: string
             names: [{
                 name: string
                 lang: string
