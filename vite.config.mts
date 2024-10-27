@@ -79,6 +79,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5192/',
         rewrite: (path) => path.replace(/^\/api/, ''),
+        ws: true,
       }
     }
   },

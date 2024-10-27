@@ -27,6 +27,8 @@ export const useUploadStore = defineStore('upload', () => {
     const uploadShowing = ref(false)
 
     async function createUploadTask(files: File[], props?: models.FilesUpdateDTO) {
+        if (files.length == 0) return
+
         const task: uploadTask = { files: [], props }
         files.forEach(file => {
             task.files.push({ file, status: TaskFileStatus.Pending })

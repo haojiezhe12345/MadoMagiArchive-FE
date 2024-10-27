@@ -202,7 +202,7 @@ function handleUploadInputChange(params: any) {
 }
 
 async function confirmUpload(fileList?: FileList | null) {
-    if (fileList) {
+    if (fileList && fileList.length > 0) {
         await uploadStore.createUploadTask(Array.from(fileList))
         loadFiles()
     }
