@@ -8,8 +8,8 @@
                 <img v-show="showPreview" ref="mediaPreviewImg" draggable="false">
 
                 <template v-if="fileType !== undefined">
-                    <video v-show="!showPreview" v-if="fileType?.startsWith('video')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" autoplay controls loop @loadeddata="loading = false"></video>
-                    <img v-show="!showPreview" v-else ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false" @load="loading = false"></img>
+                    <video v-show="!showPreview" v-if="fileType?.startsWith('video')" ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" autoplay controls loop @loadeddata="loading = false" @error="loading = false"></video>
+                    <img v-show="!showPreview" v-else ref="mediaElement" :src="axios.defaults.baseURL + `/files/${fileId}`" draggable="false" @load="loading = false" @error="loading = false"></img>
                 </template>
             </div>
         </div>
@@ -72,7 +72,16 @@ nextTick(() => {
 function fadeOutView(duration: number) {
     return new Promise<void>(resolve => {
         fileView.value?.animate(
-            [{ opacity: 1 }, { opacity: 0 }],
+            [
+                {
+                    opacity: 1,
+                    transform: 'scale(1)',
+                },
+                {
+                    opacity: 0,
+                    transform: 'scale(0.925)',
+                }
+            ],
             { duration, fill: 'forwards' },
         )
         setTimeout(resolve, duration);

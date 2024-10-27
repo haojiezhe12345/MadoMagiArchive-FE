@@ -45,6 +45,20 @@ export async function getFileDeatil(id: number) {
     return (await axios.get<models.File>(`files/${id}/detail`)).data
 }
 
+export async function uploadFiles(files: File[], onUploadProgress?: (e: AxiosProgressEvent) => void) {
+    const form = new FormData()
+    files.forEach(file => form.append('files', file))
+    return (await axios.postForm<models.FilesUploadResult>('files', form, { onUploadProgress })).data
+}
+
+export async function deleteFile(id: number) {
+    return (await axios.delete(`files/${id}`)).data
+}
+
+export async function deleteThumbs() {
+    return (await axios.delete(`files/thumbs`)).data
+}
+
 
 
 export async function getTags(params?: {
@@ -55,14 +69,4 @@ export async function getTags(params?: {
     pageSize?: number
 }) {
     return (await axios.get<models.Tag[]>('tags', { params })).data
-}
-
-export async function uploadFiles(files: File[], onUploadProgress?: (e: AxiosProgressEvent) => void) {
-    const form = new FormData()
-    files.forEach(file => form.append('files', file))
-    return (await axios.postForm<models.FilesUploadResult>('files', form, { onUploadProgress })).data
-}
-
-export async function deleteFile(id: number) {
-    return (await axios.delete(`files/${id}`)).data
 }
